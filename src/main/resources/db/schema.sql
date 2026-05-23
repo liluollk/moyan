@@ -1,15 +1,9 @@
--- ========================================
 -- 墨言(Moyan) 数据库建表语句
--- 本地开发环境（单数据源）
--- ========================================
 
--- 创建数据库
 CREATE DATABASE IF NOT EXISTS moyan DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE moyan;
 
--- ========================================
--- 1. 用户表 (sys_user)
--- ========================================
+-- 用户表
 CREATE TABLE IF NOT EXISTS sys_user (
     id BIGINT PRIMARY KEY COMMENT '用户ID（雪花算法）',
     phone VARCHAR(20) NOT NULL UNIQUE COMMENT '手机号',
@@ -24,9 +18,7 @@ CREATE TABLE IF NOT EXISTS sys_user (
     INDEX idx_create_time (create_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
 
--- ========================================
--- 2. 作品表 (work)
--- ========================================
+-- 作品表
 CREATE TABLE IF NOT EXISTS work (
     id BIGINT PRIMARY KEY COMMENT '作品ID（雪花算法）',
     user_id BIGINT NOT NULL COMMENT '作者ID',
@@ -45,9 +37,7 @@ CREATE TABLE IF NOT EXISTS work (
     INDEX idx_hot_score (hot_score)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='作品表';
 
--- ========================================
--- 3. 用户点赞表 (user_like)
--- ========================================
+-- 用户点赞表
 CREATE TABLE IF NOT EXISTS user_like (
     id BIGINT PRIMARY KEY COMMENT '主键ID',
     user_id BIGINT NOT NULL COMMENT '用户ID',
@@ -58,9 +48,7 @@ CREATE TABLE IF NOT EXISTS user_like (
     INDEX idx_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户点赞表';
 
--- ========================================
--- 4. 用户收藏表 (user_favorite)
--- ========================================
+-- 用户收藏表
 CREATE TABLE IF NOT EXISTS user_favorite (
     id BIGINT PRIMARY KEY COMMENT '主键ID',
     user_id BIGINT NOT NULL COMMENT '用户ID',
@@ -71,9 +59,7 @@ CREATE TABLE IF NOT EXISTS user_favorite (
     INDEX idx_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户收藏表';
 
--- ========================================
--- 5. 用户关注表 (follow)
--- ========================================
+-- 用户关注表
 CREATE TABLE IF NOT EXISTS follow (
     id BIGINT PRIMARY KEY COMMENT '主键ID',
     user_id BIGINT NOT NULL COMMENT '关注者ID',
@@ -86,9 +72,7 @@ CREATE TABLE IF NOT EXISTS follow (
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户关注表';
 
--- ========================================
--- 6. 系统通知表 (notification)
--- ========================================
+-- 系统通知表
 CREATE TABLE IF NOT EXISTS notification (
     id BIGINT PRIMARY KEY COMMENT '通知ID',
     user_id BIGINT NOT NULL COMMENT '接收用户ID',
@@ -101,9 +85,7 @@ CREATE TABLE IF NOT EXISTS notification (
     INDEX idx_create_time (create_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统通知表';
 
--- ========================================
--- 7. 评论表 (comment)
--- ========================================
+-- 评论表
 CREATE TABLE IF NOT EXISTS comment (
     id BIGINT PRIMARY KEY COMMENT '评论ID（雪花算法）',
     user_id BIGINT NOT NULL COMMENT '评论者ID',

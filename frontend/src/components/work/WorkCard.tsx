@@ -22,11 +22,11 @@ const { Text } = Typography;
 
 interface WorkCardProps {
   work: WorkVO;
-  onLike?: (workId: number) => void;
-  onFavorite?: (workId: number) => void;
-  onFollow?: (userId: number) => void;
-  onClick?: (workId: number) => void;
-  currentUserId?: number;
+  onLike?: (workId: string) => void;
+  onFavorite?: (workId: string) => void;
+  onFollow?: (userId: string) => void;
+  onClick?: (workId: string) => void;
+  currentUserId?: string;
 }
 
 const ActionBtn: React.FC<{
@@ -76,6 +76,30 @@ const ActionBtn: React.FC<{
   </div>
 );
 
+const stripHtml = (html: string) => html.replace(/<[^>]*>/g, '');
+
+const truncateText = (text: string, maxLen: number): string => {
+  if (stripHtml(text).length <= maxLen) return text;
+  let result = '';
+  let plainLen = 0;
+  let inTag = false;
+  for (const ch of text) {
+    if (ch === '<') inTag = true;
+    if (!inTag) plainLen++;
+    result += ch;
+    if (ch === '>') inTag = false;
+    if (plainLen >= maxLen && !inTag) break;
+  }
+  return result + '...';
+};
+
+const HighlightText: React.FC<{ text: string; className?: string; style?: React.CSSProperties }> = ({ text, className, style }) => {
+  if (text.includes('<em>')) {
+    return <span className={className} style={style} dangerouslySetInnerHTML={{ __html: text }} />;
+  }
+  return <span className={className} style={style}>{text}</span>;
+};
+
 const WorkCard: React.FC<WorkCardProps> = ({ work, onLike, onFavorite, onFollow, onClick, currentUserId }) => {
   const isOwnWork = currentUserId === work.userId;
 
@@ -122,15 +146,13 @@ const WorkCard: React.FC<WorkCardProps> = ({ work, onLike, onFavorite, onFollow,
               background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
               padding: '60px 24px 20px',
             }}>
-              <Text style={{
+              <HighlightText text={work.title} style={{
                 color: 'white',
                 fontSize: 20,
                 fontWeight: 700,
                 textShadow: '0 2px 8px rgba(0,0,0,0.4)',
                 display: 'block',
-              }}>
-                {work.title}
-              </Text>
+              }} />
             </div>
           </div>
         ) : (
@@ -139,14 +161,12 @@ const WorkCard: React.FC<WorkCardProps> = ({ work, onLike, onFavorite, onFollow,
             padding: '32px 24px',
             borderBottom: '1px solid #f0f0f0',
           }}>
-            <Text style={{
+            <HighlightText text={work.title} style={{
               color: '#1a1a2e',
               fontSize: 18,
               fontWeight: 700,
               display: 'block',
-            }}>
-              {work.title}
-            </Text>
+            }} />
           </div>
         )
       }
@@ -214,7 +234,7 @@ const WorkCard: React.FC<WorkCardProps> = ({ work, onLike, onFavorite, onFollow,
             color: '#555',
             fontSize: 14,
           }}>
-            {work.content.length > 150 ? work.content.substring(0, 150) + '...' : work.content}
+            <HighlightText text={truncateText(work.content, 150)} />
           </Text>
         )}
 

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Pagination, Empty, Spin, Typography } from 'antd';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Row, Col, Spin, Typography } from 'antd';
 import { CompassOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getRecommendFeed } from '../../api/feed';
@@ -9,129 +9,109 @@ import WorkCard from '../../components/work/WorkCard';
 import type { WorkVO } from '../../types';
 import { message } from 'antd';
 
+const { Text } = Typography;
+const PAGE_SIZE = 10;
+
 const RecommendFeedPage: React.FC = () => {
   const navigate = useNavigate();
   const [works, setWorks] = useState<WorkVO[]>([]);
   const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [hasMore, setHasMore] = useState(true);
+  const pageRef = useRef(1);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const loadWorks = async (page: number) => {
+  const loadWorks = useCallback(async (page: number) => {
     setLoading(true);
     try {
-      const response = await getRecommendFeed(page, pageSize);
-      setWorks(response.data.data.records);
-      setTotal(response.data.data.total);
-      setCurrentPage(page);
-    } catch (error: any) {
-      message.error('加载推荐动态失败');
+      const response = await getRecommendFeed(page, PAGE_SIZE);
+      const { records, total } = response.data.data;
+      if (page === 1) {
+        setWorks(records);
+      } else {
+        setWorks(prev => [...prev, ...records]);
+      }
+      setHasMore(records.length === PAGE_SIZE && works.length + records.length < total);
+      pageRef.current = page;
+    } catch {
+      message.error('加载失败');
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadWorks(1);
   }, []);
 
-  const handleLike = async (workId: number) => {
+  useEffect(() => { loadWorks(1); }, []);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasMore && !loading) {
+          loadWorks(pageRef.current + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadWorks]);
+
+  const handleLike = async (workId: string) => {
     const work = works.find(w => w.id === workId);
     if (!work) return;
-
     const wasLiked = work.isLiked;
     const oldCount = work.likeCount || 0;
-
     setWorks(prev => prev.map(w =>
-      w.id === workId
-        ? { ...w, isLiked: !wasLiked, likeCount: wasLiked ? oldCount - 1 : oldCount + 1 }
-        : w
+      w.id === workId ? { ...w, isLiked: !wasLiked, likeCount: wasLiked ? oldCount - 1 : oldCount + 1 } : w
     ));
-
     try {
-      if (wasLiked) {
-        await unlikeWork(workId);
-        message.success('已取消点赞');
-      } else {
-        await likeWork(workId);
-        message.success('点赞成功');
-      }
-    } catch (error: any) {
+      if (wasLiked) { await unlikeWork(workId); } else { await likeWork(workId); }
+    } catch {
       setWorks(prev => prev.map(w =>
         w.id === workId ? { ...w, isLiked: wasLiked, likeCount: oldCount } : w
       ));
-      message.error('操作失败');
     }
   };
 
-  const handleFavorite = async (workId: number) => {
+  const handleFavorite = async (workId: string) => {
     const work = works.find(w => w.id === workId);
     if (!work) return;
-
     const wasFavorited = work.isFavorited;
     const oldCount = work.favoriteCount || 0;
-
     setWorks(prev => prev.map(w =>
-      w.id === workId
-        ? { ...w, isFavorited: !wasFavorited, favoriteCount: wasFavorited ? oldCount - 1 : oldCount + 1 }
-        : w
+      w.id === workId ? { ...w, isFavorited: !wasFavorited, favoriteCount: wasFavorited ? oldCount - 1 : oldCount + 1 } : w
     ));
-
     try {
-      if (wasFavorited) {
-        await unfavoriteWork(workId);
-        message.success('已取消收藏');
-      } else {
-        await favoriteWork(workId);
-        message.success('收藏成功');
-      }
-    } catch (error: any) {
+      if (wasFavorited) { await unfavoriteWork(workId); } else { await favoriteWork(workId); }
+    } catch {
       setWorks(prev => prev.map(w =>
         w.id === workId ? { ...w, isFavorited: wasFavorited, favoriteCount: oldCount } : w
       ));
-      message.error('操作失败');
     }
   };
 
-  const handleClick = (workId: number) => {
-    navigate(`/work/${workId}`);
-  };
+  const handleClick = (workId: string) => navigate(`/work/${workId}`);
 
   return (
     <div style={{ maxWidth: 1060, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
         <CompassOutlined style={{ color: '#667eea', fontSize: 20 }} />
-        <Typography.Text strong style={{ fontSize: 18, color: '#1a1a2e' }}>推荐</Typography.Text>
+        <Text strong style={{ fontSize: 18, color: '#1a1a2e' }}>推荐</Text>
       </div>
-      <Spin spinning={loading}>
-        {works.length > 0 ? (
-          <>
-            <Row gutter={[16, 16]}>
-              {works.map((work) => (
-                <Col span={24} key={work.id}>
-                  <WorkCard
-                    work={work}
-                    onLike={handleLike}
-                    onFavorite={handleFavorite}
-                    onClick={handleClick}
-                  />
-                </Col>
-              ))}
-            </Row>
 
-            <div style={{ textAlign: 'center', marginTop: 24 }}>
-              <Pagination
-                current={currentPage}
-                total={total}
-                pageSize={pageSize}
-                onChange={loadWorks}
-              />
-            </div>
-          </>
-        ) : (
-          !loading && <Empty description="暂无推荐内容" />
-        )}
-      </Spin>
+      <Row gutter={[16, 16]}>
+        {works.map(work => (
+          <Col span={24} key={work.id}>
+            <WorkCard work={work} onLike={handleLike} onFavorite={handleFavorite} onClick={handleClick} />
+          </Col>
+        ))}
+      </Row>
+
+      <div ref={sentinelRef} style={{ textAlign: 'center', padding: '24px 0' }}>
+        {loading && <Spin />}
+        {!hasMore && works.length > 0 && <Text type="secondary" style={{ fontSize: 13 }}>— 已经到底了 —</Text>}
+        {!loading && works.length === 0 && <Text type="secondary">暂无推荐内容</Text>}
+      </div>
     </div>
   );
 };

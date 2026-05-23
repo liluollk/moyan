@@ -16,7 +16,9 @@ import PublishPage from './pages/work/Publish';
 import WorkDetailPage from './pages/work/WorkDetail';
 import NotificationsPage from './pages/notification/Notifications';
 import SearchPage from './pages/search/Search';
+import RankingPage from './pages/rank/Ranking';
 import ProfilePage from './pages/user/Profile';
+import AiAskPage from './pages/ask/AiAsk';
 
 // 路由守卫组件
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -54,7 +56,9 @@ const App: React.FC = () => {
             <Route path="work/:workId" element={<WorkDetailPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="search" element={<SearchPage />} />
+            <Route path="ranking" element={<RankingPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="ai" element={<AiAskPage />} />
           </Route>
           
           {/* 重定向未知路由 */}

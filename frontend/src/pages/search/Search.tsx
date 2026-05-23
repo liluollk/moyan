@@ -42,7 +42,7 @@ const SearchPage: React.FC = () => {
     if (keyword.trim()) handleSearch();
   }, [keyword]);
 
-  const handleLike = async (workId: number) => {
+  const handleLike = async (workId: string) => {
     const work = works.find(w => w.id === workId);
     if (!work) return;
     const wasLiked = work.isLiked;
@@ -57,7 +57,7 @@ const SearchPage: React.FC = () => {
     }
   };
 
-  const handleFavorite = async (workId: number) => {
+  const handleFavorite = async (workId: string) => {
     const work = works.find(w => w.id === workId);
     if (!work) return;
     const wasFavorited = work.isFavorited;
@@ -72,7 +72,7 @@ const SearchPage: React.FC = () => {
     }
   };
 
-  const handleClick = (workId: number) => navigate(`/work/${workId}`);
+  const handleClick = (workId: string) => navigate(`/work/${workId}`);
 
   return (
     <div style={{ maxWidth: 1060, margin: '0 auto' }}>

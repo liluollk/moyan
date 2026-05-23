@@ -8,7 +8,9 @@ import {
   SearchOutlined,
   UserOutlined,
   LogoutOutlined,
-  HeartOutlined
+  HeartOutlined,
+  TrophyOutlined,
+  RobotOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { getUnreadCount } from '../../api/notification';
@@ -57,7 +59,9 @@ const MainLayout: React.FC = () => {
     { key: '/', icon: <HomeOutlined />, label: '首页' },
     { key: '/follow', icon: <HeartOutlined />, label: '关注' },
     { key: '/recommend', icon: <CompassOutlined />, label: '推荐' },
-    { key: '/publish', icon: <PlusCircleOutlined />, label: '发布' }
+    { key: '/ranking', icon: <TrophyOutlined />, label: '排行榜' },
+    { key: '/publish', icon: <PlusCircleOutlined />, label: '发布' },
+    { key: '/ai', icon: <RobotOutlined />, label: 'AI问答' }
   ];
 
   const userMenuItems: MenuProps['items'] = [

@@ -1,3 +1,6 @@
+// Long 类型 ID 在后端序列化为字符串，前端统一用 string 避免 JS 精度丢失
+export type ID = string;
+
 // 统一响应结果
 export interface Result<T = any> {
   code: number;
@@ -14,7 +17,7 @@ export interface TokenVO {
 
 // 用户信息
 export interface User {
-  id: number;
+  id: ID;
   phone: string;
   nickname: string;
   avatar: string;
@@ -25,8 +28,8 @@ export interface User {
 
 // 作品信息
 export interface WorkVO {
-  id: number;
-  userId: number;
+  id: ID;
+  userId: ID;
   nickname: string;
   avatar: string;
   title: string;
@@ -52,11 +55,11 @@ export interface PageResult<T> {
 
 // 通知
 export interface Notification {
-  id: number;
-  userId: number;
-  type: number; // 1-点赞 2-收藏 3-评论 4-关注
+  id: ID;
+  userId: ID;
+  type: number;
   content: string;
-  isRead: number; // 0-未读 1-已读
+  isRead: number;
   createTime: string;
 }
 
@@ -82,7 +85,7 @@ export interface PublishWorkRequest {
 
 // 更新作品请求
 export interface UpdateWorkRequest {
-  id: number;
+  id: ID;
   title?: string;
   content?: string;
   images?: string[];
@@ -95,19 +98,27 @@ export interface UpdateProfileRequest {
   intro?: string;
 }
 
-// 评论信息
-export interface CommentVO {
-  id: number;
-  userId: number;
+// 关注用户信息
+export interface FollowUserVO {
+  userId: ID;
   nickname: string;
   avatar: string;
-  workId: number;
+  isFollowing: boolean;
+}
+
+// 评论信息
+export interface CommentVO {
+  id: ID;
+  userId: ID;
+  nickname: string;
+  avatar: string;
+  workId: ID;
   content: string;
   createTime: string;
 }
 
 // 添加评论请求
 export interface AddCommentRequest {
-  workId: number;
+  workId: ID;
   content: string;
 }

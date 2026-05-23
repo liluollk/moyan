@@ -102,7 +102,6 @@ const PublishPage: React.FC = () => {
               fileList={fileList}
               customRequest={({ file }) => handleUpload(file as File)}
               onRemove={(file) => setFileList(prev => prev.filter(item => item.uid !== file.uid))}
-              beforeUpload={() => false}
             >
               {fileList.length >= 9 ? null : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>

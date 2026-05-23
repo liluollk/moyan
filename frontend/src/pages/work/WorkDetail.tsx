@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Avatar, Typography, Spin, Empty, Divider, Input, List, message, Image as AntImage } from 'antd';
+import { Card, Avatar, Typography, Spin, Empty, Divider, Input, List, message, Image as AntImage, Modal, Form, Popconfirm, Button } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   HeartOutlined,
@@ -11,9 +11,11 @@ import {
   CheckCircleFilled,
   MessageOutlined,
   UserOutlined,
-  SendOutlined
+  SendOutlined,
+  EditOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
-import { getWorkDetail } from '../../api/work';
+import { getWorkDetail, deleteWork, updateWork } from '../../api/work';
 import { likeWork, unlikeWork } from '../../api/like';
 import { favoriteWork, unfavoriteWork } from '../../api/favorite';
 import { followUser, unfollowUser } from '../../api/follow';
@@ -33,13 +35,16 @@ const WorkDetailPage: React.FC = () => {
   const [comments, setComments] = useState<CommentVO[]>([]);
   const [commentContent, setCommentContent] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<number | undefined>();
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
+  const [editVisible, setEditVisible] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [form] = Form.useForm();
 
   const loadWorkDetail = async () => {
     if (!workId) return;
     setLoading(true);
     try {
-      const response = await getWorkDetail(Number(workId));
+      const response = await getWorkDetail(workId);
       setWork(response.data.data);
     } catch (error: any) {
       message.error('加载作品详情失败');
@@ -51,7 +56,7 @@ const WorkDetailPage: React.FC = () => {
   const loadComments = async () => {
     if (!workId) return;
     try {
-      const response = await getComments(Number(workId), 1, 50);
+      const response = await getComments(workId, 1, 50);
       setComments(response.data.data.records || []);
     } catch {
       // comments load failure is non-critical
@@ -120,6 +125,40 @@ const WorkDetailPage: React.FC = () => {
       message.error('评论失败');
     } finally {
       setCommentLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!work) return;
+    try {
+      await deleteWork(work.id);
+      message.success('删除成功');
+      navigate('/');
+    } catch {
+      message.error('删除失败');
+    }
+  };
+
+  const handleEditOpen = () => {
+    if (!work) return;
+    form.setFieldsValue({ title: work.title, content: work.content });
+    setEditVisible(true);
+  };
+
+  const handleEditSubmit = async () => {
+    if (!work) return;
+    try {
+      const values = await form.validateFields();
+      setEditLoading(true);
+      await updateWork({ id: work.id, ...values });
+      message.success('更新成功');
+      setEditVisible(false);
+      loadWorkDetail();
+    } catch (error: any) {
+      if (error.errorFields) return;
+      message.error('更新失败');
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -195,7 +234,17 @@ const WorkDetailPage: React.FC = () => {
               </Text>
             </div>
           </div>
-          {currentUserId && currentUserId !== work.userId && (
+          {currentUserId && currentUserId === work.userId ? (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Button icon={<EditOutlined />} onClick={handleEditOpen}
+                style={{ borderRadius: 12, borderColor: '#667eea', color: '#667eea' }}>编辑</Button>
+              <Popconfirm title="确定删除这个作品吗？" onConfirm={handleDelete} okText="删除" cancelText="取消"
+                okButtonProps={{ danger: true, style: { borderRadius: 8 } }}
+                cancelButtonProps={{ style: { borderRadius: 8 } }}>
+                <Button icon={<DeleteOutlined />} danger style={{ borderRadius: 12 }}>删除</Button>
+              </Popconfirm>
+            </div>
+          ) : currentUserId && (
             <div
               onClick={handleFollow}
               style={{
@@ -330,6 +379,27 @@ const WorkDetailPage: React.FC = () => {
           <Empty description="暂无评论，快来发表第一条评论吧" imageStyle={{ height: 80 }} />
         )}
       </Card>
+
+      {/* 编辑作品弹窗 */}
+      <Modal
+        title={<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><EditOutlined style={{ color: '#667eea' }} /><span>编辑作品</span></div>}
+        open={editVisible}
+        onOk={handleEditSubmit}
+        onCancel={() => setEditVisible(false)}
+        confirmLoading={editLoading}
+        okText="保存" cancelText="取消"
+        okButtonProps={{ style: { borderRadius: 10, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none' } }}
+        cancelButtonProps={{ style: { borderRadius: 10 } }}
+      >
+        <Form form={form} layout="vertical" style={{ marginTop: 20 }}>
+          <Form.Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }, { max: 100, message: '标题不能超过100个字符' }]}>
+            <Input placeholder="请输入标题" style={{ borderRadius: 10 }} />
+          </Form.Item>
+          <Form.Item name="content" label="内容" rules={[{ max: 5000, message: '内容不能超过5000个字符' }]}>
+            <TextArea rows={4} placeholder="请输入内容" style={{ borderRadius: 10 }} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

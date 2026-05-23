@@ -479,3 +479,290 @@ code {
 .fade-in {
   animation: fadeIn 0.3s ease-out;
 }
+
+/* 搜索高亮 */
+em {
+  font-style: normal;
+  background: rgba(102, 126, 234, 0.18);
+  color: #667eea;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* ========== 登录/注册页面 ========== */
+
+.auth-page {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* 动态渐变背景 */
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 400% 400%;
+  animation: authGradient 12s ease infinite;
+}
+
+@keyframes authGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 浮动光球 */
+.auth-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.auth-orb-1 {
+  width: 500px;
+  height: 500px;
+  background: rgba(255, 180, 200, 0.5);
+  top: -150px;
+  left: -100px;
+  animation: orbFloat1 18s ease-in-out infinite;
+}
+
+.auth-orb-2 {
+  width: 400px;
+  height: 400px;
+  background: rgba(130, 100, 255, 0.4);
+  bottom: -100px;
+  right: -80px;
+  animation: orbFloat2 22s ease-in-out infinite;
+}
+
+.auth-orb-3 {
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 200, 150, 0.35);
+  top: 50%;
+  right: 20%;
+  animation: orbFloat3 15s ease-in-out infinite;
+}
+
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, 40px) scale(1.1); }
+}
+
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, -30px) scale(1.15); }
+}
+
+@keyframes orbFloat3 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(-30px, 40px); }
+  66% { transform: translate(20px, -30px); }
+}
+
+/* 装饰圆环 */
+.auth-ring {
+  position: fixed;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.auth-ring-1 {
+  width: 200px;
+  height: 200px;
+  top: 10%;
+  right: 10%;
+  animation: ringSpin 25s linear infinite;
+}
+
+.auth-ring-2 {
+  width: 120px;
+  height: 120px;
+  bottom: 15%;
+  left: 8%;
+  animation: ringSpin 18s linear infinite reverse;
+}
+
+@keyframes ringSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 装饰圆点 */
+.auth-dot {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.auth-dot-1 {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  top: 20%;
+  left: 15%;
+  animation: dotPulse 3s ease-in-out infinite;
+}
+
+.auth-dot-2 {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 200, 100, 0.7);
+  top: 70%;
+  right: 25%;
+  animation: dotPulse 4s ease-in-out infinite 1s;
+}
+
+.auth-dot-3 {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 150, 200, 0.5);
+  bottom: 25%;
+  left: 30%;
+  animation: dotPulse 3.5s ease-in-out infinite 0.5s;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+
+/* 内容区 */
+.auth-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Logo */
+.auth-logo {
+  text-align: center;
+  margin-bottom: 24px;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.auth-logo-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 卡片 */
+.auth-card {
+  width: 420px;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+  border: none !important;
+  animation: cardSlideUp 0.5s ease-out;
+}
+
+@keyframes cardSlideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 输入框 */
+.auth-input {
+  height: 50px !important;
+  border-radius: 14px !important;
+  border: 2px solid #eee !important;
+  background: #fafafe !important;
+  transition: all 0.3s !important;
+  font-size: 15px !important;
+}
+
+.auth-input:hover {
+  border-color: #d4d0f0 !important;
+  background: white !important;
+}
+
+.auth-input:focus,
+.ant-input-affix-wrapper-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+  background: white !important;
+}
+
+/* 按钮 */
+.auth-btn {
+  height: 50px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35) !important;
+}
+
+.auth-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(102, 126, 234, 0.45) !important;
+}
+
+.auth-btn:active {
+  transform: translateY(0);
+}
+
+/* 按钮光效 */
+.auth-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: skewX(-20deg);
+  animation: btnShine 4s ease-in-out infinite;
+}
+
+@keyframes btnShine {
+  0%, 100% { left: -60%; }
+  50% { left: 120%; }
+}
+
+/* 底部标语 */
+.auth-tagline {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 20px;
+  margin-top: 48px;
+  letter-spacing: 4px;
+  font-weight: 300;
+  animation: fadeIn 1s ease-out 0.3s both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

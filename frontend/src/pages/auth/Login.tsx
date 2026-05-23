@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Card, message, Typography } from 'antd';
-import { LockOutlined, PhoneOutlined } from '@ant-design/icons';
+import { LockOutlined, PhoneOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../../api/auth';
 import type { LoginRequest } from '../../types';
@@ -16,11 +16,10 @@ const LoginPage: React.FC = () => {
     try {
       const response = await login(values);
       const { accessToken, refreshToken } = response.data.data;
-      
-      // 保存Token
+
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
-      
+
       message.success('登录成功');
       navigate('/');
     } catch (error: any) {
@@ -31,110 +30,95 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px'
-    }}>
-      <Card 
-        style={{ 
-          width: 420, 
-          borderRadius: '20px',
-          backdropFilter: 'blur(10px)',
-          backgroundColor: 'rgba(255, 255, 255, 0.85)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-          overflow: 'hidden'
-        }}
-        bodyStyle={{ padding: '40px 30px' }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: 30 }}>
-          <div style={{ 
-            width: 80, 
-            height: 80, 
-            borderRadius: '50%', 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 16px',
-            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
-          }}>
-            <span style={{ fontSize: 32, color: 'white', fontWeight: 'bold' }}>墨</span>
+    <div className="auth-page">
+      {/* 动态渐变背景 */}
+      <div className="auth-bg" />
+
+      {/* 浮动装饰元素 */}
+      <div className="auth-orb auth-orb-1" />
+      <div className="auth-orb auth-orb-2" />
+      <div className="auth-orb auth-orb-3" />
+      <div className="auth-ring auth-ring-1" />
+      <div className="auth-ring auth-ring-2" />
+      <div className="auth-dot auth-dot-1" />
+      <div className="auth-dot auth-dot-2" />
+      <div className="auth-dot auth-dot-3" />
+
+      <div className="auth-content">
+        {/* Logo */}
+        <div className="auth-logo">
+          <div className="auth-logo-icon">
+            <EditOutlined style={{ fontSize: 28, color: 'white' }} />
           </div>
-          <Title level={2} style={{ 
-            color: '#333', 
-            marginBottom: 8,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+          <Title level={2} style={{
+            color: 'white',
+            margin: '12px 0 4px',
+            textShadow: '0 2px 16px rgba(0,0,0,0.15)',
+            fontWeight: 700,
+            letterSpacing: 6,
           }}>墨言</Title>
-          <Title level={4} style={{ color: '#666', fontWeight: 'normal' }}>欢迎回来</Title>
         </div>
 
-        <Form
-          name="login"
-          onFinish={onFinish}
-          autoComplete="off"
-          size="large"
+        {/* 卡片 */}
+        <Card
+          className="auth-card"
+          bodyStyle={{ padding: '36px 32px' }}
         >
-          <Form.Item
-            name="phone"
-            rules={[
-              { required: true, message: '请输入手机号' },
-              { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确' }
-            ]}
+          <Form
+            name="login"
+            onFinish={onFinish}
+            autoComplete="off"
+            size="large"
           >
-            <Input 
-              prefix={<PhoneOutlined style={{ color: '#667eea' }} />} 
-              placeholder="请输入手机号"
-              size="large"
-              style={{ height: 48, borderRadius: 12 }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: '请输入密码' }]}
-          >
-            <Input.Password 
-              prefix={<LockOutlined style={{ color: '#667eea' }} />}
-              placeholder="请输入密码"
-              size="large"
-              style={{ height: 48, borderRadius: 12 }}
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              loading={loading}
-              block
-              size="large"
-              style={{ 
-                height: 48,
-                borderRadius: 12,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderColor: 'transparent',
-                fontSize: 16,
-                fontWeight: 500
-              }}
+            <Form.Item
+              name="phone"
+              rules={[
+                { required: true, message: '请输入手机号' },
+                { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确' }
+              ]}
             >
-              登录
-            </Button>
-          </Form.Item>
+              <Input
+                prefix={<PhoneOutlined style={{ color: '#667eea', fontSize: 16 }} />}
+                placeholder="请输入手机号"
+                className="auth-input"
+              />
+            </Form.Item>
 
-          <div style={{ textAlign: 'center', marginTop: 16 }}>
-            <span style={{ color: '#666' }}>还没有账号？</span>
-            <Link to="/register" style={{ marginLeft: 8, color: '#667eea', fontWeight: 500 }}>
-              立即注册
-            </Link>
-          </div>
-        </Form>
-      </Card>
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: '请输入密码' }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined style={{ color: '#667eea', fontSize: 16 }} />}
+                placeholder="请输入密码"
+                className="auth-input"
+              />
+            </Form.Item>
+
+            <Form.Item style={{ marginTop: 8 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                block
+                className="auth-btn"
+              >
+                登录
+              </Button>
+            </Form.Item>
+
+            <div style={{ textAlign: 'center', marginTop: 12 }}>
+              <span style={{ color: '#999', fontSize: 14 }}>还没有账号？</span>
+              <Link to="/register" style={{ marginLeft: 6, color: '#667eea', fontWeight: 600, fontSize: 14 }}>
+                立即注册
+              </Link>
+            </div>
+          </Form>
+        </Card>
+
+        {/* 底部标语 */}
+        <p className="auth-tagline">创意作品分享平台，让灵感被看见</p>
+      </div>
     </div>
   );
 };

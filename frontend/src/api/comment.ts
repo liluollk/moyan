@@ -7,12 +7,12 @@ export const addComment = (data: AddCommentRequest) => {
 };
 
 // 删除评论
-export const deleteComment = (commentId: number) => {
+export const deleteComment = (commentId: string) => {
   return request.delete<Result<void>>(`/comments/${commentId}`);
 };
 
 // 获取作品评论列表
-export const getComments = (workId: number, pageNum: number = 1, pageSize: number = 10) => {
+export const getComments = (workId: string, pageNum: number = 1, pageSize: number = 10) => {
   return request.get<Result<PageResult<CommentVO>>>(`/comments/work/${workId}`, {
     params: { pageNum, pageSize }
   });
